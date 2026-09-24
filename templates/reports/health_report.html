@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Health Report" subtitle="Vaccinations, treatments and vet visits" %}
+{% include "components/date_range.html" %}
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+  {% include "components/stat_card.html" with label="Vaccination cost" value=vaccine_cost|currency icon="health" color="bg-emerald-50 text-emerald-700" %}
+  {% include "components/stat_card.html" with label="Treatment cost" value=treatment_cost|currency icon="health" color="bg-rose-50 text-rose-700" %}
+  {% include "components/stat_card.html" with label="Vet visit cost" value=vet_cost|currency icon="health" color="bg-amber-50 text-amber-700" %}
+</div>
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Vaccinations ({{ vaccinations|length }})</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Vaccine</th><th class="px-4 py-2 text-right">Cost</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">{% for v in vaccinations %}<tr><td class="px-4 py-2 font-medium">{{ v.animal.full_name }}</td><td class="px-4 py-2 text-gray-600">{{ v.vaccine_name }}</td><td class="px-4 py-2 text-right text-gray-700">{{ v.cost|currency }}</td></tr>{% empty %}<tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Treatments ({{ treatments|length }})</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Diagnosis</th><th class="px-4 py-2 text-right">Cost</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">{% for t in treatments %}<tr><td class="px-4 py-2 font-medium">{{ t.animal.full_name }}</td><td class="px-4 py-2 text-gray-600">{{ t.diagnosis|default:"—" }}</td><td class="px-4 py-2 text-right text-gray-700">{{ t.cost|currency }}</td></tr>{% empty %}<tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Vet visits ({{ vet_visits|length }})</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Reason</th><th class="px-4 py-2 text-right">Cost</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">{% for v in vet_visits %}<tr><td class="px-4 py-2 font-medium">{{ v.animal.full_name }}</td><td class="px-4 py-2 text-gray-600">{{ v.reason|default:"—" }}</td><td class="px-4 py-2 text-right text-gray-700">{{ v.cost|currency }}</td></tr>{% empty %}<tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% load core_tags %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Tag</th>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Breed</th>
+        <th class="px-4 py-3">Sex</th>
+        <th class="px-4 py-3">Category</th>
+        <th class="px-4 py-3">Age</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for animal in animals %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-mono font-semibold text-emerald-800">{{ animal.tag_number }}</td>
+        <td class="px-4 py-2.5"><a href="{% url 'herd:animal_detail' animal.pk %}" class="font-medium text-gray-900 hover:text-emerald-700">{{ animal.name|default:"—" }}</a></td>
+        <td class="px-4 py-2.5 text-gray-600">{{ animal.breed|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ animal.sex }}</td>
+        <td class="px-4 py-2.5"><span class="badge">{{ animal.category|badge }}</span></td>
+        <td class="px-4 py-2.5 text-gray-500">{{ animal.dob|age_from }}</td>
+        <td class="px-4 py-2.5"><span class="badge">{{ animal.status|badge }}</span></td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'herd:animal_detail' animal.pk %}" class="mr-2 text-sky-600 hover:text-sky-800" title="View">View</a>
+          <a href="{% url 'herd:animal_edit' animal.pk %}" class="mr-2 text-gray-500 hover:text-gray-800" title="Edit">Edit</a>
+          <a href="{% url 'herd:animal_delete' animal.pk %}" class="text-rose-500 hover:text-rose-700" title="Delete">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-400">No animals found. Register your first animal to get started.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}

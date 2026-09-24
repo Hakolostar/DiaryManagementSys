@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-2xl font-bold tracking-tight text-gray-900">Farm Dashboard</h1>
+  <p class="mt-1 text-sm text-gray-500">Overview of your herd, milk production and finances</p>
+</div>
+
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  {% include "components/stat_card.html" with label="Animals (active)" value=total_animals icon="herd" color="bg-emerald-50 text-emerald-700" sub=milkers|stringformat:"%s milking cows" %}
+  {% include "components/stat_card.html" with label="Milk today" value=today_milk|currency sub="litres" icon="milk" color="bg-amber-50 text-amber-700" %}
+  {% include "components/stat_card.html" with label="Milk this month" value=month_milk|currency sub="AM "|add:am_total|stringformat:"%s"|add:" | PM "|add:pm_total|stringformat:"%s" icon="milk" color="bg-sky-50 text-sky-700" %}
+  {% include "components/stat_card.html" with label="Month balance" value=month_balance|currency sub="Income "|add:month_income|stringformat:"%s"|add:" · Expense "|add:month_expense|stringformat:"%s" icon="finance" color="bg-rose-50 text-rose-700" %}
+</div>
+
+<div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Due heats (next 7 days)</div>
+    <ul class="divide-y divide-gray-100 text-sm">
+      {% for h in due_heats %}<li class="flex items-center justify-between px-4 py-2.5"><span class="font-medium text-gray-800">{{ h.animal.full_name }}</span><span class="text-gray-500">{{ h.expected_heat_date }}</span></li>{% empty %}<li class="px-4 py-3 text-gray-400">Nothing due.</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Expected calvings (next 14 days)</div>
+    <ul class="divide-y divide-gray-100 text-sm">
+      {% for p in due_calvings %}<li class="flex items-center justify-between px-4 py-2.5"><span class="font-medium text-gray-800">{{ p.animal.full_name }}</span><span class="text-gray-500">{{ p.expected_calving_date }}</span></li>{% empty %}<li class="px-4 py-3 text-gray-400">Nothing due.</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Vaccinations due (next 30 days)</div>
+    <ul class="divide-y divide-gray-100 text-sm">
+      {% for v in due_vaccinations %}<li class="flex items-center justify-between px-4 py-2.5"><span class="font-medium text-gray-800">{{ v.animal.full_name }}</span><span class="text-gray-500">{{ v.vaccine_name }} · {{ v.next_due_date }}</span></li>{% empty %}<li class="px-4 py-3 text-gray-400">Nothing due.</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Low-stock medicines</div>
+    <ul class="divide-y divide-gray-100 text-sm">
+      {% for m in low_medicines %}<li class="flex items-center justify-between px-4 py-2.5"><span class="font-medium text-gray-800">{{ m.name }}</span><span class="text-amber-700">{{ m.stock_quantity }} {{ m.unit }}</span></li>{% empty %}<li class="px-4 py-3 text-gray-400">All medicines in stock.</li>{% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    if (typeof Chart === 'undefined') return;
+    var palette = ['#10b981', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#14b8a6'];
+
+    var milkCtx = document.getElementById('milkChart');
+    if (milkCtx) {
+      new Chart(milkCtx, {
+        type: 'line',
+        data: {
+          labels: {{ milk_labels_json|safe }},
+          datasets: [{ label: 'Litres', data: {{ milk_values_json|safe }}, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.15)', tension: 0.3, fill: true }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    var herdCtx = document.getElementById('herdChart');
+    if (herdCtx) {
+      new Chart(herdCtx, {
+        type: 'doughnut',
+        data: {
+          labels: {{ herd_labels_json|safe }},
+          datasets: [{ data: {{ herd_values_json|safe }}, backgroundColor: palette }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+
+    var finCtx = document.getElementById('financeChart');
+    if (finCtx) {
+      new Chart(finCtx, {
+        type: 'bar',
+        data: {
+          labels: {{ finance_labels_json|safe }},
+          datasets: [
+            { label: 'Income', data: {{ finance_income_json|safe }}, backgroundColor: '#10b981' },
+            { label: 'Expense', data: {{ finance_expense_json|safe }}, backgroundColor: '#f43f5e' }
+          ]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+      });
+    }
+  });
+</script>
+{% endblock %}

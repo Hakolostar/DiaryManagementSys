@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Salary Payments" subtitle="Monthly salary disbursements" button_url_name="employees:salary_add" button_label="Pay Salary" %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Employee</th>
+        <th class="px-4 py-3">Month</th>
+        <th class="px-4 py-3">Paid on</th>
+        <th class="px-4 py-3 text-right">Salary</th>
+        <th class="px-4 py-3 text-right">Bonus</th>
+        <th class="px-4 py-3 text-right">Deduction</th>
+        <th class="px-4 py-3 text-right">Net</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for p in payments %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ p.employee.name }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ p.month|date:"M Y" }}</td>
+        <td class="px-4 py-2.5 text-gray-500 whitespace-nowrap">{{ p.paid_date|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ p.amount|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-emerald-700">{{ p.bonus|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-rose-600">{{ p.deduction|currency }}</td>
+        <td class="px-4 py-2.5 text-right font-semibold text-gray-900">{{ p.net|currency }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'employees:salary_edit' p.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'employees:salary_delete' p.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-400">No salary payments yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

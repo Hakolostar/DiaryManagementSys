@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Calving" subtitle="Calving records and outcomes" button_url_name="breeding:calving_add" button_label="Record Calving" %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Calving date</th>
+        <th class="px-4 py-3">Type</th>
+        <th class="px-4 py-3 text-right">Male</th>
+        <th class="px-4 py-3 text-right">Female</th>
+        <th class="px-4 py-3">Complication</th>
+        <th class="px-4 py-3">Vet</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for c in calvings %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ c.animal.full_name }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ c.calving_date }}</td>
+        <td class="px-4 py-2.5 text-gray-700">{{ c.calving_type }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ c.male_calves }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ c.female_calves }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ c.complication }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ c.vet_name|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'breeding:calving_edit' c.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'breeding:calving_delete' c.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-400">No calving records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

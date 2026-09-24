@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Heat" subtitle="Heat detection and expected heat schedule" button_url_name="breeding:heat_add" button_label="Record Heat" %}
+{% if due_heats %}
+<div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+  <p class="font-semibold text-amber-800">Expected heats coming due soon</p>
+  <ul class="mt-1 list-inside list-disc text-amber-700">
+    {% for h in due_heats %}<li class="text-amber-700">{{ h.animal.full_name }} — expected {{ h.expected_heat_date }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Heat date</th>
+        <th class="px-4 py-3">Expected heat</th>
+        <th class="px-4 py-3">Detected by</th>
+        <th class="px-4 py-3">Bred</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for h in heats %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ h.animal.full_name }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ h.heat_date }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ h.expected_heat_date|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ h.detected_by|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ h.is_bred|yesno:"Yes,No" }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'breeding:heat_edit' h.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'breeding:heat_delete' h.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-4 py-10 text-center text-sm text-gray-400">No heat records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

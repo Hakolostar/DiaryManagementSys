@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Sales & Purchases Report" subtitle="Revenue and spending in the selected period" %}
+{% include "components/date_range.html" %}
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-4">
+  {% include "components/stat_card.html" with label="Sales revenue" value=sales_total|currency icon="sales" color="bg-emerald-50 text-emerald-700" %}
+  {% include "components/stat_card.html" with label="Sales outstanding" value=sales_outstanding|currency icon="sales" color="bg-amber-50 text-amber-700" %}
+  {% include "components/stat_card.html" with label="Purchase spend" value=purchase_total|currency icon="purchases" color="bg-rose-50 text-rose-700" %}
+  {% include "components/stat_card.html" with label="Purchase outstanding" value=purchase_outstanding|currency icon="purchases" color="bg-amber-50 text-amber-700" %}
+</div>
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Sales ({{ sales|length }})</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Sale #</th><th class="px-4 py-2">Customer</th><th class="px-4 py-2">Type</th><th class="px-4 py-2 text-right">Total</th><th class="px-4 py-2">Status</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for s in sales %}<tr><td class="px-4 py-2 font-mono text-xs text-gray-500">{{ s.sale_number }}</td><td class="px-4 py-2 font-medium text-gray-800">{{ s.customer.name }}</td><td class="px-4 py-2 text-gray-600">{{ s.sale_type }}</td><td class="px-4 py-2 text-right font-semibold text-gray-800">{{ s.total|currency }}</td><td class="px-4 py-2"><span class="badge">{{ s.payment_status|badge }}</span></td></tr>
+        {% empty %}<tr><td colspan="5" class="px-4 py-10 text-center text-gray-400">No records.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Purchases ({{ purchases|length }})</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Purchase #</th><th class="px-4 py-2">Item</th><th class="px-4 py-2">Supplier</th><th class="px-4 py-2 text-right">Total</th><th class="px-4 py-2">Status</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for p in purchases %}<tr><td class="px-4 py-2 font-mono text-xs text-gray-500">{{ p.purchase_number }}</td><td class="px-4 py-2 font-medium text-gray-800">{{ p.item_name }}</td><td class="px-4 py-2 text-gray-600">{{ p.supplier.name|default:"—" }}</td><td class="px-4 py-2 text-right font-semibold text-gray-800">{{ p.total|currency }}</td><td class="px-4 py-2"><span class="badge">{{ p.payment_status|badge }}</span></td></tr>
+        {% empty %}<tr><td colspan="5" class="px-4 py-10 text-center text-gray-400">No records.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

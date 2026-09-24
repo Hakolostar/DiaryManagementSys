@@ -1,0 +1,13 @@
+{
+  "name": "dairy-management",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Modern Dairy Management System — server-rendered Django + Tailwind CSS + HTMX",
+  "scripts": {
+    "css:build": "tailwindcss -i static/css/input.css -o static/css/tailwind.css --minify",
+    "css:watch": "tailwindcss -i static/css/input.css -o static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

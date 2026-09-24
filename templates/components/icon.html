@@ -1,0 +1,37 @@
+{% if name == "dashboard" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 8v9M8 4v13M12 6v11M16 3v14M20 9v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "herd" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h6M4 8h10M4 12h14M4 16h10M4 20h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "milk" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4.5"/><path d="M9 11l3 6 3-6" fill="currentColor"/></svg>
+{% elif name == "breeding" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="9" r="4.2"/><circle cx="15" cy="9" r="4.2"/><path d="M9 12h6v7H9Z" fill="currentColor"/></svg>
+{% elif name == "health" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "feed" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="10" r="6"/><path d="M12 15v5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "inventory" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M5 5h14v14H5Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M9 12h6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+{% elif name == "sales" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="10" r="5.5"/><path d="M14 10v4h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "purchases" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="7" width="16" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 18h2v3M14 18h2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "finance" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="12" r="5"/><circle cx="16" cy="12" r="5"/></svg>
+{% elif name == "employees" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="6" r="3.6"/><path d="M7 10h10v9H7Z" fill="currentColor"/></svg>
+{% elif name == "reports" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h12v16H6Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M6 6h12M8 4v16" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+{% elif name == "chevron" %}
+<svg class="{{ class|default:'w-4 h-4' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9 8l6 6 6-6Z" fill="currentColor"/></svg>
+{% elif name == "plus" %}
+<svg class="{{ class|default:'w-4 h-4' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "trash" %}
+<svg class="{{ class|default:'w-4 h-4' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16v11H4Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M6 20h12v3M8 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "edit" %}
+<svg class="{{ class|default:'w-4 h-4' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 7h9v12H6Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M6 11h9" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+{% elif name == "user" %}
+<svg class="{{ class|default:'w-5 h-5' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="7" r="4"/><path d="M12 12v8M7 14h10M7 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+{% elif name == "logout" %}
+<svg class="{{ class|default:'w-4 h-4' }}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M5 5l6 11-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+{% else %}<span></span>{% endif %}

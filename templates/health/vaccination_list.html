@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Vaccination" subtitle="Vaccination schedule and history" button_url_name="health:vaccination_add" button_label="Record Vaccination" %}
+{% if due_vaccinations %}
+<div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+  <p class="font-semibold text-amber-800">Vaccinations due within 30 days</p>
+  <ul class="mt-1 list-inside list-disc text-amber-700">
+    {% for v in due_vaccinations %}<li class="text-amber-700">{{ v.animal.full_name }} — {{ v.vaccine_name }} due {{ v.next_due_date }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Vaccine</th>
+        <th class="px-4 py-3">Date</th>
+        <th class="px-4 py-3">Next due</th>
+        <th class="px-4 py-3">Given by</th>
+        <th class="px-4 py-3 text-right">Cost</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for v in vaccinations %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ v.animal.full_name }}</td>
+        <td class="px-4 py-2.5 text-gray-700">{{ v.vaccine_name }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ v.date }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ v.next_due_date|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ v.administered_by|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ v.cost|currency }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'health:vaccination_edit' v.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'health:vaccination_delete' v.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-400">No vaccination records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">{{ animal.tag_number }} <span class="font-normal text-gray-500">· {{ animal.name|default:"unnamed" }}</span></h1>
+    <p class="mt-1 text-sm text-gray-500">Registered {{ animal.created_at|date:"M j, Y" }} · Updated {{ animal.updated_at|date:"M j, Y" }}</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{% url 'herd:animal_edit' animal.pk %}" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Edit</a>
+    <a href="{% url 'herd:movement_add' %}?animal={{ animal.pk }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Record movement</a>
+  </div>
+</div>
+
+<div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-gray-500">Breed</p><p class="mt-1 text-lg font-semibold text-gray-900">{{ animal.breed|default:"—" }}</p></div>
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-gray-500">Sex</p><p class="mt-1 text-lg font-semibold text-gray-900">{{ animal.sex }}</p></div>
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-gray-500">Category</p><p class="mt-1 text-lg font-semibold text-gray-900">{{ animal.category }}</p></div>
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-gray-500">Age</p><p class="mt-1 text-lg font-semibold text-gray-900">{{ animal.dob|age_from }}</p></div>
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"><p class="text-xs font-medium text-gray-500">Status</p><p class="mt-1"><span class="badge">{{ animal.status|badge }}</span></p></div>
+</div>
+
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm lg:col-span-2">
+    <h2 class="text-base font-semibold text-gray-800">Activity Timeline</h2>
+    <ul class="mt-4 space-y-3">
+      {% for ev in timeline %}
+      <li class="flex items-start gap-3">
+        <span class="mt-0.5 flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+        <span class="w-24 text-xs text-gray-400 whitespace-nowrap">{{ ev.0 }}</span>
+        <span class="w-28 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ ev.1 }}</span>
+        <span class="text-sm text-gray-700">{{ ev.2 }}</span>
+      </li>
+      {% empty %}
+      <li class="text-sm text-gray-400">No activity recorded for this animal yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-gray-50 p-5 shadow-sm">
+    <h2 class="text-base font-semibold text-gray-800">Details</h2>
+    <dl class="mt-4 space-y-2 text-sm">
+      <div><dt class="text-xs text-gray-500">Source</dt><dd class="font-medium text-gray-800">{{ animal.source }}</dd></div>
+      <div><dt class="text-xs text-gray-500">Sire</dt><dd class="font-medium text-gray-800">{{ animal.sire|default:"—" }}</dd></div>
+      <div><dt class="text-xs text-gray-500">Dam</dt><dd class="font-medium text-gray-800">{{ animal.dam|default:"—" }}</dd></div>
+      <div><dt class="text-xs text-gray-500">Date of birth</dt><dd class="font-medium text-gray-800">{{ animal.dob|default:"—" }}</dd></div>
+      <div><dt class="text-xs text-gray-500">Birth weight</dt><dd class="font-medium text-gray-800">{{ animal.birth_weight|default:"—" }} kg</dd></div>
+      <div><dt class="text-xs text-gray-500">Color</dt><dd class="font-medium text-gray-800">{{ animal.color|default:"—" }}</dd></div>
+      {% if animal.purchase_date %}<div><dt class="text-xs text-gray-500">Purchased</dt><dd class="font-medium text-gray-800">{{ animal.purchase_date }} · {{ animal.purchase_price|currency }}</dd></div>{% endif %}
+      {% if animal.notes %}<div><dt class="text-xs text-gray-500">Notes</dt><dd class="font-medium text-gray-700">{{ animal.notes }}</dd></div>{% endif %}
+    </dl>
+  </div>
+</div>
+{% endblock %}

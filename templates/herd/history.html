@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Animal History" subtitle="Herd-wide activity log — filter by animal" %}
+<form method="get" class="mb-4 flex items-center gap-3">
+  <label class="text-sm font-medium text-gray-600">Animal</label>
+  <select name="animal" onchange="this.form.submit()" class="rounded-lg border border-gray-300 bg-white py-2 pr-8 text-sm shadow-sm">
+    <option value="">Entire herd</option>
+    {% for a in animals %}<option value="{{ a.pk }}" {% if animal_id == a.pk|stringformat:"s" %}selected{% endif %}>{{ a.tag_number }} — {{ a.name|default:"unnamed" }}</option>{% endfor %}
+  </select>
+</form>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Date</th>
+        <th class="px-4 py-3">Type</th>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Detail</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for ev in events %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 text-gray-500 whitespace-nowrap">{{ ev.0 }}</td>
+        <td class="px-4 py-2.5"><span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">{{ ev.1 }}</span></td>
+        <td class="px-4 py-2.5 font-medium text-gray-800">{{ ev.3 }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ ev.2 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="px-4 py-10 text-center text-sm text-gray-400">No activity recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

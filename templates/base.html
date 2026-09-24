@@ -1,0 +1,209 @@
+{% load static %}{% load core_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dashboard{% endblock %} · {{ app_name }}</title>
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body class="bg-gray-100 text-gray-900 antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<div class="flex min-h-screen">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="hidden w-64 shrink-0 flex-col bg-[#0f2a1d] text-emerald-50 lg:flex lg:w-64">
+    <div class="flex items-center gap-2.5 border-b border-white/10 px-4 py-4">
+      <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300">
+        {% include "components/icon.html" with name="milk" class="w-5 h-5" %}
+      </div>
+      <div class="leading-tight">
+        <p class="text-sm font-bold text-white">{{ farm.farm_name|default:"Dairy Manager" }}</p>
+        <p class="text-xs text-emerald-200/70">Farm Management System</p>
+      </div>
+    </div>
+
+    <nav class="mt-1 flex-1 space-y-0.5 overflow-y-auto px-3 py-3 text-[13px]">
+      <a href="{% url 'reports:dashboard' %}"
+         class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.url_name == 'dashboard' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">
+        {% include "components/icon.html" with name="dashboard" %} Dashboard
+      </a>
+
+      <!-- HERD -->
+      <div class="mt-2">
+        <button type="button" data-target="nav-herd" onclick="toggleGroup('nav-herd')"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Herd</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-herd" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'herd:animal_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'herd' and request.resolver_match.url_name == 'animal_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Animal Master</a>
+          <a href="{% url 'herd:breed_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'herd' and request.resolver_match.url_name == 'breed_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Breed</a>
+          <a href="{% url 'herd:movement_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'herd' and request.resolver_match.url_name == 'movement_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Animal Movement</a>
+          <a href="{% url 'herd:history' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'herd' and request.resolver_match.url_name == 'history' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Animal History</a>
+        </div>
+      </div>
+
+      <!-- MILK PRODUCTION -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-milk" onclick="toggleGroup('nav-milk')"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Milk Production</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-milk" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'milk:morning_milk' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'milk' and request.resolver_match.url_name == 'morning_milk' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Morning Milk</a>
+          <a href="{% url 'milk:evening_milk' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'milk' and request.resolver_match.url_name == 'evening_milk' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Evening Milk</a>
+          <a href="{% url 'milk:cow_yield' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'milk' and request.resolver_match.url_name == 'cow_yield' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Cow Yield</a>
+          <a href="{% url 'milk:lactation_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'milk' and request.resolver_match.url_name == 'lactation_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Lactation</a>
+          <a href="{% url 'milk:quality_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'milk' and request.resolver_match.url_name == 'quality_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Milk Quality</a>
+        </div>
+      </div>
+
+      <!-- BREEDING -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-breeding" onclick="toggleGroup('nav-breeding')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Breeding</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-breeding" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'breeding:heat_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'breeding' and request.resolver_match.url_name == 'heat_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Heat</a>
+          <a href="{% url 'breeding:insemination_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'breeding' and request.resolver_match.url_name == 'insemination_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">AI / Insemination</a>
+          <a href="{% url 'breeding:pregnancy_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'breeding' and request.resolver_match.url_name == 'pregnancy_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Pregnancy</a>
+          <a href="{% url 'breeding:calving_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'breeding' and request.resolver_match.url_name == 'calving_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Calving</a>
+        </div>
+      </div>
+
+      <!-- HEALTH -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-health" onclick="toggleGroup('nav-health')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Health</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-health" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'health:vet_visit_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'health' and request.resolver_match.url_name == 'vet_visit_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Veterinary Visits</a>
+          <a href="{% url 'health:vaccination_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'health' and request.resolver_match.url_name == 'vaccination_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Vaccination</a>
+          <a href="{% url 'health:treatment_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'health' and request.resolver_match.url_name == 'treatment_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Treatment</a>
+          <a href="{% url 'health:medicine_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'health' and request.resolver_match.url_name == 'medicine_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Medicine</a>
+        </div>
+      </div>
+
+      <!-- FEED -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-feed" onclick="toggleGroup('nav-feed')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Feed</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-feed" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'feed:item_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'feed' and request.resolver_match.url_name == 'item_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Feed Items</a>
+          <a href="{% url 'feed:consumption_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'feed' and request.resolver_match.url_name == 'consumption_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Feed Consumption</a>
+          <a href="{% url 'feed:purchase_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'feed' and request.resolver_match.url_name == 'purchase_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Feed Purchase</a>
+          <a href="{% url 'feed:feed_cost' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'feed' and request.resolver_match.url_name == 'feed_cost' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Feed Cost</a>
+        </div>
+      </div>
+
+      <!-- MAIN LINKS -->
+      <a href="{% url 'inventory:item_list' %}" class="group-link mt-2 flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'inventory' and request.resolver_match.url_name == 'item_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">{% include "components/icon.html" with name="inventory" %} Inventory</a>
+      <a href="{% url 'sales:sale_list' %}" class="group-link mt-1.5 flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'sales' and request.resolver_match.url_name == 'sale_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">{% include "components/icon.html" with name="sales" %} Sales</a>
+      <a href="{% url 'purchases:purchase_list' %}" class="group-link mt-1.5 flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'purchases' and request.resolver_match.url_name == 'purchase_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">{% include "components/icon.html" with name="purchases" %} Purchases</a>
+      <a href="{% url 'finance:transaction_list' %}" class="group-link mt-1.5 flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'finance' and request.resolver_match.url_name == 'transaction_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">{% include "components/icon.html" with name="finance" %} Finance</a>
+
+      <!-- EMPLOYEES -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-employees" onclick="toggleGroup('nav-employees')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Employees</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-employees" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'employees:employee_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'employee_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Employees</a>
+          <a href="{% url 'employees:salary_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'salary_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Salary Payments</a>
+          <a href="{% url 'employees:advance_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'advance_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Salary Advances</a>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-reports" onclick="toggleGroup('nav-reports')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Reports</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-reports" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'reports:milk_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'milk_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Milk Report</a>
+          <a href="{% url 'reports:herd_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'herd_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Herd Report</a>
+          <a href="{% url 'reports:breeding_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'breeding_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Breeding Report</a>
+          <a href="{% url 'reports:health_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'health_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Health Report</a>
+          <a href="{% url 'reports:feed_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'feed_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Feed Report</a>
+          <a href="{% url 'reports:finance_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'finance_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Finance Report</a>
+          <a href="{% url 'reports:sales_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'sales_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Sales &amp; Purchases</a>
+          <a href="{% url 'reports:inventory_report' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'inventory_report' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Inventory Report</a>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="flex min-h-screen flex-1 flex-col">
+    <header class="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm sm:px-6">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="document.querySelector('aside').classList.toggle('hidden')" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 lg:hidden">
+          {% include "components/icon.html" with name="herd" %}
+        </button>
+        <div>
+          <p class="text-sm font-semibold text-gray-800">{{ title|default:"Dashboard" }}</p>
+          <p class="text-xs text-gray-400">{{ farm.farm_name|default:user }} · {% now "D, M j, Y" %}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="{% url 'accounts:profile' %}" class="hidden items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 sm:inline-flex">
+          {% include "components/icon.html" with name="user" class="w-4 h-4" %}{{ user.username }}
+        </a>
+        <div class="relative">
+          <button type="button" onclick="var m=document.getElementById('user-menu');m.classList.toggle('hidden')" class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">{{ user.username|slice:":1"|upper }}</button>
+          <div id="user-menu" class="absolute right-0 mt-2 hidden w-48 rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg">
+            <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Farm Profile</a>
+            <a href="/admin/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Admin Panel</a>
+            <form method="post" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="w-full px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50">Log out</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="{{ message.tags }} mb-4 flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 text-sm shadow-sm" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" onclick="this.parentElement.remove()" class="ml-auto text-gray-400 hover:text-gray-600">&times;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-gray-200 px-6 py-3 text-center text-xs text-gray-400">
+      {{ app_name }} · Built with Django, Tailwind CSS &amp; HTMX
+    </footer>
+  </div>
+</div>
+
+<script>
+  function toggleGroup(id) {
+    var group = document.getElementById(id);
+    if (!group) return;
+    var open = group.classList.toggle('open');
+    var chev = group.parentElement.querySelector('.chev');
+    if (chev) chev.style.transform = open ? 'rotate(90deg)' : '';
+  }
+  document.querySelectorAll('.sidebar-group').forEach(function (g) {
+    if (g.querySelector('.group-link.bg-emerald-300\\/15')) {
+      g.classList.add('open');
+      var chev = g.parentElement.querySelector('.chev');
+      if (chev) chev.style.transform = 'rotate(90deg)';
+    }
+  });
+</script>
+</body>
+</html>

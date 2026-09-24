@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Milk Production Report" subtitle="Daily production summary for the selected period" %}
+{% include "components/date_range.html" %}
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  {% include "components/stat_card.html" with label="Total milk" value=total_milk|currency sub="litres" icon="milk" color="bg-emerald-50 text-emerald-700" %}
+  {% include "components/stat_card.html" with label="Morning" value=am_total|currency sub="litres" icon="milk" color="bg-amber-50 text-amber-700" %}
+  {% include "components/stat_card.html" with label="Evening" value=pm_total|currency sub="Avg/day "|add:avg_daily|stringformat:"%s L" icon="milk" color="bg-sky-50 text-sky-700" %}
+</div>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Records from {{ start_date }} to {{ end_date }}</div>
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="text-left text-xs text-gray-500"><tr>
+      <th class="px-4 py-2">Date</th><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Session</th><th class="px-4 py-2 text-right">Quantity (L)</th>
+    </tr></thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for r in records %}
+      <tr><td class="px-4 py-2 text-gray-500">{{ r.date }}</td><td class="px-4 py-2 font-medium text-gray-800">{{ r.animal.full_name }}</td><td class="px-4 py-2 text-gray-600">{{ r.session }}</td><td class="px-4 py-2 text-right text-gray-800 font-semibold">{{ r.quantity|currency }}</td></tr>
+      {% empty %}<tr><td colspan="4" class="px-4 py-10 text-center text-gray-400">No milk records in this period.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

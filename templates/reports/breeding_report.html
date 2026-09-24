@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Breeding Report" subtitle="Heat, AI, pregnancy and calving activity" %}
+{% include "components/date_range.html" %}
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  {% include "components/stat_card.html" with label="Heats" value=heats|length icon="breeding" color="bg-amber-50 text-amber-700" %}
+  {% include "components/stat_card.html" with label="Inseminations" value=ais|length icon="breeding" color="bg-sky-50 text-sky-700" %}
+  {% include "components/stat_card.html" with label="Pregnancy checks" value=pregnancies|length icon="breeding" color="bg-violet-50 text-violet-700" %}
+  {% include "components/stat_card.html" with label="Calvings" value=calvings|length sub="Conception rate "|add:conception_rate|stringformat:"%s%%" icon="breeding" color="bg-emerald-50 text-emerald-700" %}
+</div>
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Insemination results</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Date</th><th class="px-4 py-2">Result</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for a in ais %}<tr><td class="px-4 py-2 font-medium">{{ a.animal.full_name }}</td><td class="px-4 py-2 text-gray-500">{{ a.service_date }}</td><td class="px-4 py-2"><span class="badge">{{ a.result|badge }}</span></td></tr>
+        {% empty %}<tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Calvings</div>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Date</th><th class="px-4 py-2">Type</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for c in calvings %}<tr><td class="px-4 py-2 font-medium">{{ c.animal.full_name }}</td><td class="px-4 py-2 text-gray-500">{{ c.calving_date }}</td><td class="px-4 py-2 text-gray-600">{{ c.calving_type }}</td></tr>
+        {% empty %}<tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

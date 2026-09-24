@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Medicine" subtitle="Vaccines, antibiotics and other veterinary products" button_url_name="health:medicine_add" button_label="Add Medicine" %}
+{% if low_stock %}
+<div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+  <p class="font-semibold text-amber-800">Low-stock medicine</p>
+  <ul class="mt-1 list-inside list-disc text-amber-700">
+    {% for m in low_stock %}<li class="text-amber-700">{{ m.name }} — {{ m.stock_quantity }} {{ m.unit }} left</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Medicine</th>
+        <th class="px-4 py-3">Category</th>
+        <th class="px-4 py-3 text-right">Stock</th>
+        <th class="px-4 py-3 text-right">Unit cost</th>
+        <th class="px-4 py-3">Expiry</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for m in medicines %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ m.name }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ m.category }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ m.stock_quantity }} {{ m.unit }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ m.unit_cost|currency }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ m.expiry_date|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'health:medicine_edit' m.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'health:medicine_delete' m.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-4 py-10 text-center text-sm text-gray-400">No medicine registered yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

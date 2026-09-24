@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Cow Yield" subtitle="Production performance" button_url_name="milk:yield_target_list" button_label="Yield Targets" %}
+<p class="-mt-4 mb-4 text-sm text-gray-500">{{ month }}</p>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Breed</th>
+        <th class="px-4 py-3 text-right">Days milked</th>
+        <th class="px-4 py-3 text-right">{{ month }} (L)</th>
+        <th class="px-4 py-3 text-right">Avg / day</th>
+        <th class="px-4 py-3 text-right">Target</th>
+        <th class="px-4 py-3 text-right">Lifetime (L)</th>
+        <th class="px-4 py-3 text-right">vs target</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for row in rows %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ row.animal.full_name }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ row.animal.breed|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-600">{{ row.days_milked }}</td>
+        <td class="px-4 py-2.5 text-right font-semibold text-gray-900">{{ row.month_total|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ row.avg_per_day|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-500">{{ row.target|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-600">{{ row.lifetime_total|currency }}</td>
+        <td class="px-4 py-2.5 text-right">
+          {% with diff=row.month_total|add:"0" %}
+          {% if row.target > 0 %}
+            {% if row.avg_per_day >= row.target %}<span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">On target</span>
+            {% else %}<span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">Below target</span>{% endif %}
+          {% else %}<span class="text-gray-300">—</span>{% endif %}
+          {% endwith %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-400">No active female animals yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

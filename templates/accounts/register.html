@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account · Dairy Manager</title>
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+</head>
+<body class="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-950 via-emerald-900 to-gray-900 px-4">
+  <div class="w-full max-w-md">
+    <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-xl">
+      <h1 class="text-center text-2xl font-bold tracking-tight text-gray-900">Start your dairy farm</h1>
+      <p class="mt-1 text-center text-sm text-gray-500">Create your account and set up your workspace</p>
+
+      <form method="post" class="mt-6 space-y-3" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+        {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">{{ field.label }}{% if field.field.required %} <span class="text-rose-500">*</span>{% endif %}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="mt-0.5 text-xs text-gray-400">{{ field.help_text|safe }}</p>{% endif %}
+            {% if field.errors %}<p class="mt-1 text-sm text-rose-600">{{ field.errors.0 }}</p>{% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">Create account</button>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-gray-500">Already registered? <a href="{% url 'accounts:login' %}" class="font-semibold text-emerald-700 hover:text-emerald-800">Sign in</a></p>
+    </div>
+  </div>
+  <style>
+    input { width: 100%; border-radius: .5rem; border-color: #d1d5db; padding: .5rem .75rem; font-size: .875rem; }
+    input:focus { outline: none; border-color: #34d399; box-shadow: 0 0 0 2px rgba(52,211,153,.2); }
+  </style>
+</body>
+</html>

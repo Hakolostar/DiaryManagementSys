@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Feed Cost" subtitle="Consumption vs purchase costs for the selected year" %}
+<form method="get" class="mb-4 flex items-center gap-3">
+  <label for="year" class="text-sm font-medium text-gray-600">Year</label>
+  <select id="year" name="year" onchange="this.form.submit()" class="rounded-lg border border-gray-300 bg-white py-2 pr-8 text-sm shadow-sm">
+    {% for y in years %}<option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>{% endfor %}
+  </select>
+</form>
+
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  {% include "components/stat_card.html" with label="Consumption cost" value=total_consumption_cost|currency icon="feed" color="bg-rose-50 text-rose-600" %}
+  {% include "components/stat_card.html" with label="Purchase cost" value=purchase_cost_total|currency icon="purchases" color="bg-sky-50 text-sky-600" %}
+  {% include "components/stat_card.html" with label="Net position" value=net|currency icon="finance" color="bg-emerald-50 text-emerald-600" %}
+</div>
+
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <p class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Consumption records ({{ year }})</p>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr>
+        <th class="px-4 py-2">Date</th><th class="px-4 py-2">Feed</th><th class="px-4 py-2">Qty</th><th class="px-4 py-2 text-right">Cost</th>
+      </tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for c in consumption_records %}
+        <tr><td class="px-4 py-2 text-gray-500">{{ c.date }}</td><td class="px-4 py-2 text-gray-800">{{ c.feed_item.name }}</td><td class="px-4 py-2 text-gray-600">{{ c.quantity }}</td><td class="px-4 py-2 text-right text-gray-700">{{ c.total_cost|currency }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <p class="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Purchase records ({{ year }})</p>
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="text-left text-xs text-gray-500"><tr>
+        <th class="px-4 py-2">Date</th><th class="px-4 py-2">Feed</th><th class="px-4 py-2">Qty</th><th class="px-4 py-2 text-right">Cost</th>
+      </tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for p in purchase_records %}
+        <tr><td class="px-4 py-2 text-gray-500">{{ p.purchase_date }}</td><td class="px-4 py-2 text-gray-800">{{ p.feed_item.name }}</td><td class="px-4 py-2 text-gray-600">{{ p.quantity }}</td><td class="px-4 py-2 text-right text-gray-700">{{ p.total_cost|currency }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">No records.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

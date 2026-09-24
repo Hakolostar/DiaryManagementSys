@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Inventory" subtitle="Farm stock levels and valuation" button_url_name="inventory:item_add" button_label="Add Item" %}
+{% if low_stock %}
+<div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+  <p class="font-semibold text-amber-800">Low-stock items</p>
+  <ul class="mt-1 list-inside list-disc text-amber-700">
+    {% for i in low_stock %}<li class="text-amber-700">{{ i.name }} — {{ i.current_stock }} {{ i.unit }} left</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+<div class="mb-4 text-right"><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Total stock value: {{ total_value|currency }}</span></div>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Item</th>
+        <th class="px-4 py-3">Category</th>
+        <th class="px-4 py-3">Location</th>
+        <th class="px-4 py-3 text-right">Stock</th>
+        <th class="px-4 py-3 text-right">Unit cost</th>
+        <th class="px-4 py-3 text-right">Value</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for item in items %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ item.name }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ item.category }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ item.location|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right">
+          {{ item.current_stock }} {{ item.unit }}
+          {% if item.is_low %}<span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Low</span>{% endif %}
+        </td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ item.unit_cost|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ item.stock_value|currency }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'inventory:item_edit' item.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'inventory:item_delete' item.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-400">No inventory items yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Animal Movement" subtitle="Track barn transfers, sales and other movements" button_url_name="herd:movement_add" button_label="Record Movement" %}
+<form method="get" class="mb-4 flex items-center gap-3">
+  <input type="search" name="animal" value="{{ animal_q }}" placeholder="Filter by tag…" class="w-64 rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+  <button type="submit" class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white">Filter</button>
+</form>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Date</th>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Type</th>
+        <th class="px-4 py-3">From</th>
+        <th class="px-4 py-3">To</th>
+        <th class="px-4 py-3">Reason</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for m in movements %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 text-gray-500 whitespace-nowrap">{{ m.movement_date }}</td>
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ m.animal.full_name }}</td>
+        <td class="px-4 py-2.5"><span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">{{ m.movement_type }}</span></td>
+        <td class="px-4 py-2.5 text-gray-600">{{ m.from_location|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ m.to_location|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ m.reason|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right"><a href="{% url 'herd:movement_delete' m.pk %}" class="text-rose-500 hover:text-rose-700">Del</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-400">No movements recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

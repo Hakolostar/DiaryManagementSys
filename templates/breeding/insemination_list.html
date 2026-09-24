@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="AI / Insemination" subtitle="Artificial insemination records" button_url_name="breeding:insemination_add" button_label="Record AI" %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Animal</th>
+        <th class="px-4 py-3">Service date</th>
+        <th class="px-4 py-3">Bull</th>
+        <th class="px-4 py-3">Bull breed</th>
+        <th class="px-4 py-3">Technician</th>
+        <th class="px-4 py-3 text-right">Cost</th>
+        <th class="px-4 py-3">Result</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for r in records %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ r.animal.full_name }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ r.service_date }}</td>
+        <td class="px-4 py-2.5 text-gray-700">{{ r.bull_name|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ r.bull_breed|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-500">{{ r.technician|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ r.cost|currency }}</td>
+        <td class="px-4 py-2.5"><span class="badge">{{ r.result|badge }}</span></td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'breeding:insemination_edit' r.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'breeding:insemination_delete' r.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-400">No insemination records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

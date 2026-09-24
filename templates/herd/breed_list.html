@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Breeds" subtitle="Manage the breeds used on the farm" button_url_name="herd:breed_add" button_label="Add Breed" %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Breed</th>
+        <th class="px-4 py-3">Purpose</th>
+        <th class="px-4 py-3">Origin</th>
+        <th class="px-4 py-3 text-right">Avg yield (L/day)</th>
+        <th class="px-4 py-3 text-right">Animals</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for breed in breeds %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ breed.name }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ breed.purpose|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-gray-600">{{ breed.origin|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ breed.avg_milk_yield|currency }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ breed.animal_count }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'herd:breed_edit' breed.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'herd:breed_delete' breed.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-4 py-10 text-center text-sm text-gray-400">No breeds yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}
