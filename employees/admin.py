@@ -2,7 +2,14 @@
 
 from django.contrib import admin
 
-from .models import Advance, Employee, SalaryPayment
+from .models import (
+    Advance,
+    Attendance,
+    Employee,
+    ExpenseClaim,
+    LeaveApplication,
+    SalaryPayment,
+)
 
 
 @admin.register(Employee)
@@ -31,3 +38,24 @@ class AdvanceAdmin(admin.ModelAdmin):
     list_display = ("employee", "advance_date", "amount", "deduction_month", "repaid")
     list_filter = ("repaid",)
     search_fields = ("employee__name",)
+
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ("employee", "date", "status")
+    list_filter = ("status", "date")
+    search_fields = ("employee__name", "employee__employee_code")
+
+
+@admin.register(LeaveApplication)
+class LeaveApplicationAdmin(admin.ModelAdmin):
+    list_display = ("employee", "leave_type", "start_date", "end_date", "status")
+    list_filter = ("status", "leave_type")
+    search_fields = ("employee__name",)
+
+
+@admin.register(ExpenseClaim)
+class ExpenseClaimAdmin(admin.ModelAdmin):
+    list_display = ("employee", "claim_date", "category", "amount", "status")
+    list_filter = ("status", "category")
+    search_fields = ("employee__name", "description")

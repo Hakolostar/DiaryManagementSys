@@ -4,6 +4,7 @@
 {% block content %}
 {% include "components/page_header.html" with title="Finance Report" subtitle="Income, expenses and payroll in the selected period" %}
 {% include "components/date_range.html" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-4">
   {% include "components/stat_card.html" with label="Income" value=income_total|currency icon="finance" color="bg-emerald-50 text-emerald-700" %}
   {% include "components/stat_card.html" with label="Expense" value=expense_total|currency icon="finance" color="bg-rose-50 text-rose-700" %}

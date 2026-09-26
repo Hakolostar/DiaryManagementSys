@@ -108,6 +108,18 @@
       <a href="{% url 'purchases:purchase_list' %}" class="group-link mt-1.5 flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'purchases' and request.resolver_match.url_name == 'purchase_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">{% include "components/icon.html" with name="purchases" %} Purchases</a>
       <a href="{% url 'finance:transaction_list' %}" class="group-link mt-1.5 flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'finance' and request.resolver_match.url_name == 'transaction_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">{% include "components/icon.html" with name="finance" %} Finance</a>
 
+      <!-- INVOICING (Delivery Notes & Invoices) -->
+      <div class="mt-1.5">
+        <button type="button" data-target="nav-invoicing" onclick="toggleGroup('nav-invoicing')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
+          <span>Invoicing</span>
+          <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
+        </button>
+        <div id="nav-invoicing" class="sidebar-group mt-0.5 space-y-0.5">
+          <a href="{% url 'deliveries:delivery_note_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'deliveries' and request.resolver_match.url_name == 'delivery_note_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Delivery Notes</a>
+          <a href="{% url 'invoicing:invoice_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'invoicing' and request.resolver_match.url_name == 'invoice_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Invoices</a>
+        </div>
+      </div>
+
       <!-- EMPLOYEES -->
       <div class="mt-1.5">
         <button type="button" data-target="nav-employees" onclick="toggleGroup('nav-employees')" class="flex w-full items-center justify-between rounded-lg px-3 py-2 font-semibold text-emerald-100/80 hover:bg-white/5">
@@ -115,9 +127,13 @@
           <span class="chev text-emerald-100/50">{% include "components/icon.html" with name="chevron" class="w-3.5 h-3.5" %}</span>
         </button>
         <div id="nav-employees" class="sidebar-group mt-0.5 space-y-0.5">
-          <a href="{% url 'employees:employee_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'employee_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Employees</a>
-          <a href="{% url 'employees:salary_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'salary_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Salary Payments</a>
+          <a href="{% url 'employees:employee_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'employee_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Employee List / Directory</a>
+          <a href="{% url 'employees:attendance_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'attendance_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Attendance Tracking</a>
+          <a href="{% url 'employees:leave_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'leave_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Leave Applications</a>
+          <a href="{% url 'employees:expense_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'expense_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Expense Claims</a>
+          <a href="{% url 'employees:salary_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'salary_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Payroll / Allowances</a>
           <a href="{% url 'employees:advance_list' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'advance_list' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">Salary Advances</a>
+          <a href="{% url 'employees:hr_reports' %}" class="group-link flex items-center gap-3 rounded-lg px-3 py-2 font-medium {% if request.resolver_match.namespace == 'employees' and request.resolver_match.url_name == 'hr_reports' %}bg-emerald-300/15 text-white{% else %}text-emerald-50/70 hover:bg-white/5 hover:text-white{% endif %}">HR Reports</a>
         </div>
       </div>
 

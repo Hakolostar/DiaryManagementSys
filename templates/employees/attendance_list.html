@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Attendance Tracking" subtitle="Daily attendance register" button_url_name="employees:attendance_add" button_label="Mark Attendance" %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Date</th>
+        <th class="px-4 py-3">Employee</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Notes</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for r in records %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 text-gray-500 whitespace-nowrap">{{ r.date }}</td>
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ r.employee.name }}</td>
+        <td class="px-4 py-2.5"><span class="badge">{{ r.status|badge }}</span></td>
+        <td class="px-4 py-2.5 text-gray-500">{{ r.notes|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'employees:attendance_edit' r.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'employees:attendance_delete' r.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="px-4 py-10 text-center text-sm text-gray-400">No attendance records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

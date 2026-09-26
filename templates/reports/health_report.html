@@ -4,6 +4,7 @@
 {% block content %}
 {% include "components/page_header.html" with title="Health Report" subtitle="Vaccinations, treatments and vet visits" %}
 {% include "components/date_range.html" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
   {% include "components/stat_card.html" with label="Vaccination cost" value=vaccine_cost|currency icon="health" color="bg-emerald-50 text-emerald-700" %}
   {% include "components/stat_card.html" with label="Treatment cost" value=treatment_cost|currency icon="health" color="bg-rose-50 text-rose-700" %}

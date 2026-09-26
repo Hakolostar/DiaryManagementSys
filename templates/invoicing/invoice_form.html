@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-4xl">
+  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    {% include "components/page_header.html" with title=title subtitle=subtitle %}
+    <form method="post" class="mt-4 space-y-5" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ form.non_field_errors }}</div>{% endif %}
+      <div class="border-b border-gray-200 pb-2 text-sm font-semibold text-gray-800">Invoice header</div>
+      {% include "components/form_fields.html" %}
+      <div class="mt-6 border-b border-gray-200 pb-2 text-sm font-semibold text-gray-800">Line items <span class="text-xs text-gray-400">(fill at least one row)</span></div>
+      {{ items_formset.management_form }}
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <tr>
+            <th class="px-3 py-2 w-28">Item code</th>
+            <th class="px-3 py-2">Description</th>
+            <th class="px-3 py-2 w-24 text-right">Qty</th>
+            <th class="px-3 py-2 w-28 text-right">Unit price</th>
+            <th class="px-3 py-2 w-12 text-center">Del</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for f in items_formset %}
+          <tr class="align-top">
+            <td class="px-2 py-1.5">{{ f.item_code }}</td>
+            <td class="px-2 py-1.5">{{ f.description }}</td>
+            <td class="px-2 py-1.5 text-right">{{ f.quantity }}</td>
+            <td class="px-2 py-1.5 text-right">{{ f.unit_price }}</td>
+            <td class="px-2 py-1.5 text-center">{{ f.DELETE }}</td>
+          </tr>
+          {% if f.errors %}<tr><td colspan="5" class="px-2 py-1 text-xs text-rose-600">{{ f.errors }}</td></tr>{% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="flex items-center gap-3 pt-4">
+        <button type="submit" class="rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">Save Invoice</button>
+        <a href="{% if cancel_url %}{{ cancel_url }}{% else %}#{% endif %}" class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  const doInfo = {
+    {% for dn in delivery_notes %}{{ dn.pk }}: {driver: "{{ dn.driver_name|escapejs }}", shop: "{{ dn.customer.name|escapejs }}", customerId: "{{ dn.customer.pk }}"},{% endfor %}
+  };
+  document.addEventListener('DOMContentLoaded', function () {
+    const sel = document.getElementById('id_delivery_note');
+    if (!sel) return;
+    const driver = document.getElementById('id_driver_name');
+    const ship = document.getElementById('id_ship_to');
+    const cust = document.getElementById('id_customer');
+    sel.addEventListener('change', function () {
+      const info = doInfo[sel.value];
+      if (!info) return;
+      if (driver) driver.value = info.driver;
+      if (ship) ship.value = info.shop;
+      if (cust) cust.value = info.customerId;
+    });
+  });
+</script>
+{% endblock %}

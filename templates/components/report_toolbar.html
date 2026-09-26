@@ -1,0 +1,10 @@
+{% load core_tags %}
+{# Report action bar: Export Excel (server XLSX) + Print (browser). Hidden when printing. #}
+<div class="mb-4 flex items-center gap-3 print:hidden">
+  {% if request.GET.urlencode %}
+  <a href="?format=xlsx&{{ request.GET.urlencode }}" class="inline-flex items-center rounded-lg border border-emerald-600 px-4 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Export Excel</a>
+  {% else %}
+  <a href="?format=xlsx" class="inline-flex items-center rounded-lg border border-emerald-600 px-4 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Export Excel</a>
+  {% endif %}
+  <button type="button" onclick="window.print()" class="inline-flex items-center rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Print</button>
+</div>

@@ -4,6 +4,7 @@
 {% block content %}
 {% include "components/page_header.html" with title="Sales & Purchases Report" subtitle="Revenue and spending in the selected period" %}
 {% include "components/date_range.html" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-4">
   {% include "components/stat_card.html" with label="Sales revenue" value=sales_total|currency icon="sales" color="bg-emerald-50 text-emerald-700" %}
   {% include "components/stat_card.html" with label="Sales outstanding" value=sales_outstanding|currency icon="sales" color="bg-amber-50 text-amber-700" %}

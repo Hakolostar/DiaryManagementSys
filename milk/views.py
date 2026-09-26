@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -212,3 +213,23 @@ class YieldTargetEditView(AppUpdateView):
     title = "Edit Yield Target"
     cancel_url = reverse_lazy("milk:yield_target_list")
     success_message = "Yield target updated."
+
+
+@login_required
+def milk_export(request):
+    """Export a daily morning/evening milk summary to an .xlsx file."""
+    from django.db.models import Count
+
+    from core.xlsx import build_xlsx_response
+
+    qs = (
+        MilkProduction.objects.values("date", "session")
+        .annotate(total=Sum("quantity"), n=Count("id"))
+        .order_by("-date")
+    )
+    headers = ["Date", "Session", "Total (litres)", "Record Count"]
+    rows = [
+        [r["date"], r["session"], float(r["total"]), r["n"]]
+        for r in qs
+    ]
+    return build_xlsx_response("milk-production-summary", headers, rows)

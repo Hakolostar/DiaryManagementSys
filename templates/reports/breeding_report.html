@@ -4,6 +4,7 @@
 {% block content %}
 {% include "components/page_header.html" with title="Breeding Report" subtitle="Heat, AI, pregnancy and calving activity" %}
 {% include "components/date_range.html" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
   {% include "components/stat_card.html" with label="Heats" value=heats|length icon="breeding" color="bg-amber-50 text-amber-700" %}
   {% include "components/stat_card.html" with label="Inseminations" value=ais|length icon="breeding" color="bg-sky-50 text-sky-700" %}

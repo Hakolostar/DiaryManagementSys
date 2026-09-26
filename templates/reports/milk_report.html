@@ -4,6 +4,7 @@
 {% block content %}
 {% include "components/page_header.html" with title="Milk Production Report" subtitle="Daily production summary for the selected period" %}
 {% include "components/date_range.html" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
   {% include "components/stat_card.html" with label="Total milk" value=total_milk|currency sub="litres" icon="milk" color="bg-emerald-50 text-emerald-700" %}
   {% include "components/stat_card.html" with label="Morning" value=am_total|currency sub="litres" icon="milk" color="bg-amber-50 text-amber-700" %}

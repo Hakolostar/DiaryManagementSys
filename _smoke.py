@@ -92,13 +92,49 @@ URLS = [
     "/finance/categories/add/",
     # Employees
     "/employees/",
-    "/employees/add/",
+    "/employees/directory/",
+    "/employees/directory/add/",
+    "/employees/attendance/",
+    "/employees/attendance/add/",
+    "/employees/leave/",
+    "/employees/leave/add/",
+    "/employees/expenses/",
+    "/employees/expenses/add/",
     "/employees/salaries/",
     "/employees/salaries/add/",
     "/employees/advances/",
     "/employees/advances/add/",
-    # Reports
+    "/employees/reports/",
+    # Deliveries & invoicing
+    "/deliveries/",
+    "/deliveries/add/",
+    "/invoicing/",
+    "/invoicing/add/",
+    # Exports
+    "/milk/export/",
+    "/deliveries/export/",
+    "/invoicing/export/",
+    "/employees/directory/export/",
+        # Reports
     "/reports/milk/",
+    "/reports/milk/?format=xlsx",
+    "/reports/herd/",
+    "/reports/herd/?format=xlsx",
+    "/reports/breeding/",
+    "/reports/breeding/?format=xlsx",
+    "/reports/health/",
+    "/reports/health/?format=xlsx",
+    "/reports/feed/",
+    "/reports/feed/?format=xlsx",
+    "/reports/finance/",
+    "/reports/finance/?format=xlsx",
+    "/reports/sales/",
+    "/reports/sales/?format=xlsx",
+    "/reports/inventory/",
+    "/reports/inventory/?format=xlsx",
+    # HR reports export
+    "/employees/reports/",
+    "/employees/reports/?format=xlsx",
     "/reports/herd/",
     "/reports/breeding/",
     "/reports/health/",
@@ -109,6 +145,17 @@ URLS = [
     # Admin
     "/admin/",
 ]
+
+# Detail / print / edit pages for the first delivery note & invoice
+from deliveries.models import DeliveryNote
+from invoicing.models import Invoice
+
+dn_id = DeliveryNote.objects.values_list("id", flat=True).first()
+inv_id = Invoice.objects.values_list("id", flat=True).first()
+if dn_id:
+    URLS += [f"/deliveries/{dn_id}/", f"/deliveries/{dn_id}/print/", f"/deliveries/{dn_id}/edit/"]
+if inv_id:
+    URLS += [f"/invoicing/{inv_id}/", f"/invoicing/{inv_id}/print/", f"/invoicing/{inv_id}/edit/"]
 
 fails = []
 for url in URLS:

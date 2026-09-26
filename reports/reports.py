@@ -6,6 +6,7 @@ from django.db.models import Count, Sum
 from django.views.generic import TemplateView
 
 from core.views import AppMixin
+from core.xlsx import build_xlsx_response
 
 from milk.models import MilkProduction
 from herd.models import Animal
@@ -14,7 +15,7 @@ from health.models import Treatment, Vaccination, VetVisit
 
 
 class BaseReportView(AppMixin, TemplateView):
-    """Adds a report date range to the template context."""
+    """Adds a report date range to the template context plus XLSX export."""
 
     range_days = 30
 
@@ -32,8 +33,30 @@ class BaseReportView(AppMixin, TemplateView):
             end = today
         return start, end
 
+    def get(self, request, *args, **kwargs):
+        """Serve an Excel download when ``?format=xlsx`` is requested."""
+        if request.GET.get("format") == "xlsx":
+            return self.render_xlsx()
+        return super().get(request, *args, **kwargs)
+
+    def render_xlsx(self):
+        ctx = self.get_context_data()
+        headers, rows = self.xlsx_export(ctx)
+        return build_xlsx_response(self.xlsx_filename(), headers, rows)
+
+    def xlsx_filename(self):
+        return self.title
+
+    def xlsx_export(self, ctx):
+        """Return (headers, rows) for the Excel export.
+
+        Override in subclasses to customise the exported sheet.
+        """
+        return [], []
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        ctx["request"] = self.request
         start, end = self.get_range()
         ctx["start_date"] = start
         ctx["end_date"] = end
@@ -68,6 +91,14 @@ class MilkReportView(BaseReportView):
         ctx["avg_daily"] = round(avg, 2)
         return ctx
 
+    def xlsx_export(self, ctx):
+        headers = ["Date", "Animal", "Session", "Quantity (L)"]
+        rows = [
+            [r.date, r.animal.full_name, r.session, r.quantity]
+            for r in ctx["records"]
+        ]
+        return headers, rows
+
 
 class HerdReportView(BaseReportView):
     template_name = "reports/herd_report.html"
@@ -78,7 +109,9 @@ class HerdReportView(BaseReportView):
         ctx = super().get_context_data(**kwargs)
         ctx["herd"] = Animal.objects.select_related("breed").all()
         ctx["by_status"] = list(
-            Animal.objects.values("status").annotate(n=Count("id")).order_by("status")
+            Animal.objects.values("status")
+            .annotate(n=Count("id"))
+            .order_by("status")
         )
         ctx["by_category"] = list(
             Animal.objects.values("category")
@@ -86,11 +119,19 @@ class HerdReportView(BaseReportView):
             .order_by("category")
         )
         ctx["by_breed"] = list(
-            Animal.objects.values("breed__name").annotate(n=Count("id")).order_by(
-                "-n"
-            )[:8]
+            Animal.objects.values("breed__name")
+            .annotate(n=Count("id"))
+            .order_by("-n")[:8]
         )
         return ctx
+
+    def xlsx_export(self, ctx):
+        headers = ["Tag", "Name", "Breed", "Sex", "Category", "Status", "D.O.B"]
+        rows = [
+            [a.tag_number, a.name, str(a.breed) if a.breed else "", a.sex, a.category, a.status, a.dob]
+            for a in ctx["herd"]
+        ]
+        return headers, rows
 
 
 class BreedingReportView(BaseReportView):
@@ -119,6 +160,15 @@ class BreedingReportView(BaseReportView):
         )
         return ctx
 
+    def xlsx_export(self, ctx):
+        headers = ["Animal", "Date", "Description", "Type"]
+        rows = []
+        for a in ctx["ais"]:
+            rows.append([a.animal.full_name, a.service_date, a.result, "Insemination"])
+        for c in ctx["calvings"]:
+            rows.append([c.animal.full_name, c.calving_date, c.calving_type, "Calving"])
+        return headers, rows
+
 
 class HealthReportView(BaseReportView):
     template_name = "reports/health_report.html"
@@ -142,6 +192,17 @@ class HealthReportView(BaseReportView):
         ctx["vet_cost"] = sum(float(v.cost) for v in ctx["vet_visits"])
         return ctx
 
+    def xlsx_export(self, ctx):
+        headers = ["Animal", "Description", "Type", "Cost"]
+        rows = []
+        for v in ctx["vaccinations"]:
+            rows.append([v.animal.full_name, v.vaccine_name, "Vaccination", v.cost])
+        for t in ctx["treatments"]:
+            rows.append([t.animal.full_name, t.diagnosis, "Treatment", t.cost])
+        for v in ctx["vet_visits"]:
+            rows.append([v.animal.full_name, v.reason, "Vet visit", v.cost])
+        return headers, rows
+
 
 class FeedReportView(BaseReportView):
     template_name = "reports/feed_report.html"
@@ -164,6 +225,20 @@ class FeedReportView(BaseReportView):
         )
         ctx["purchase_cost"] = sum(float(p.total_cost) for p in ctx["purchases"])
         return ctx
+
+    def xlsx_export(self, ctx):
+        headers = ["Date", "Feed", "Animal", "Qty", "Cost"]
+        rows = [
+            [
+                c.date,
+                c.feed_item.name,
+                c.animal.full_name if c.animal else "Herd group",
+                c.quantity,
+                c.total_cost,
+            ]
+            for c in ctx["consumptions"]
+        ]
+        return headers, rows
 
 
 class FinanceReportView(BaseReportView):
@@ -202,6 +277,20 @@ class FinanceReportView(BaseReportView):
         ctx["by_category"] = sorted(by_cat.items(), key=lambda x: x[1], reverse=True)
         return ctx
 
+    def xlsx_export(self, ctx):
+        headers = ["Date", "Category", "Description", "Amount", "Type"]
+        rows = [
+            [
+                t.transaction_date,
+                t.category.name,
+                t.description,
+                t.amount,
+                "Income" if t.is_income else "Expense",
+            ]
+            for t in ctx["transactions"]
+        ]
+        return headers, rows
+
 
 class SalesReportView(BaseReportView):
     template_name = "reports/sales_report.html"
@@ -230,6 +319,14 @@ class SalesReportView(BaseReportView):
         )
         return ctx
 
+    def xlsx_export(self, ctx):
+        headers = ["Sale #", "Customer", "Type", "Total", "Status"]
+        rows = [
+            [s.sale_number, s.customer.name, s.sale_type, s.total, s.payment_status]
+            for s in ctx["sales"]
+        ]
+        return headers, rows
+
 
 class InventoryReportView(BaseReportView):
     template_name = "reports/inventory_report.html"
@@ -245,3 +342,19 @@ class InventoryReportView(BaseReportView):
         ctx["total_value"] = sum(float(i.stock_value) for i in items)
         ctx["low_items"] = [i for i in items if i.is_low]
         return ctx
+
+    def xlsx_export(self, ctx):
+        headers = ["Item", "Category", "Unit", "Stock", "Unit Cost", "Value", "Status"]
+        rows = [
+            [
+                i.name,
+                i.category,
+                i.unit,
+                i.current_stock,
+                i.unit_cost,
+                i.stock_value,
+                "Low stock" if i.is_low else "In stock",
+            ]
+            for i in ctx["items"]
+        ]
+        return headers, rows

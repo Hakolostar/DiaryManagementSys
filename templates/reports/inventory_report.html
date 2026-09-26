@@ -3,6 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 {% include "components/page_header.html" with title="Inventory Report" subtitle="Current stock position and valuation" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
   {% include "components/stat_card.html" with label="Total stock value" value=total_value|currency icon="inventory" color="bg-emerald-50 text-emerald-700" %}
   {% include "components/stat_card.html" with label="Low-stock items" value=low_items|length icon="inventory" color="bg-amber-50 text-amber-700" %}

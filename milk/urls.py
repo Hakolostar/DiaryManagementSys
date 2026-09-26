@@ -82,4 +82,6 @@ urlpatterns = [
         views.QualityDeleteView.as_view(),
         name="quality_delete",
     ),
+    # Summary export
+    path("export/", views.milk_export, name="milk_export"),
 ]

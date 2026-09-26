@@ -4,6 +4,7 @@
 {% block content %}
 {% include "components/page_header.html" with title="Feed Report" subtitle="Feed usage and cost in the selected period" %}
 {% include "components/date_range.html" %}
+{% include "components/report_toolbar.html" %}
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
   {% include "components/stat_card.html" with label="Consumption cost" value=consumption_cost|currency icon="feed" color="bg-rose-50 text-rose-700" %}
   {% include "components/stat_card.html" with label="Purchase cost" value=purchase_cost|currency icon="purchases" color="bg-emerald-50 text-emerald-700" %}

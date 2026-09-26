@@ -13,12 +13,14 @@ from django.core.management.base import BaseCommand
 
 from accounts.models import FarmProfile
 from breeding.models import Calving, Heat, Insemination, Pregnancy
+from deliveries.models import DeliveryNote
 from employees.models import Advance, Employee, SalaryPayment
 from feed.models import FeedConsumption, FeedItem, FeedPurchase
 from finance.models import FinanceCategory, Transaction
 from health.models import Medicine, Treatment, Vaccination, VetVisit
 from herd.models import Animal, AnimalMovement, Breed
 from inventory.models import InventoryItem, StockTransaction
+from invoicing.models import Invoice, InvoiceItem
 from milk.models import Lactation, MilkProduction, MilkQuality, YieldTarget
 from purchases.models import Purchase, Supplier
 from sales.models import Customer, Sale
@@ -341,6 +343,37 @@ class Command(BaseCommand):
         Advance.objects.create(employee=emp2, advance_date=today - timedelta(days=20),
                                amount=Decimal("80.00"), deduction_month=today.replace(day=1))
         self.stdout.write("  Employees seeded")
+
+        # ---------- Delivery notes & invoices ----------
+        dn1 = DeliveryNote.objects.create(
+            customer=customers[1], your_order_no="PO-7781",
+            your_order_date=today - timedelta(days=5),
+            dispatched_date=today - timedelta(days=4),
+            driver_name="M. Getahun", branch_name="Addis Branch",
+            description_of_goods="Fresh pasteurised milk, 4% butterfat",
+            qty_delivered=Decimal("120.00"), checked_by="H. Ali",
+            supervisor_name="A. Bekele", supervisor_signed=True,
+        )
+        DeliveryNote.objects.create(
+            customer=customers[2], dispatched_date=today - timedelta(days=1),
+            driver_name="T. Solomon", branch_name="Central Branch",
+            description_of_goods="Fresh milk & yogurt", qty_delivered=Decimal("60.00"),
+            checked_by="H. Ali", supervisor_signed=True,
+        )
+        inv = Invoice.objects.create(
+            invoice_date=today - timedelta(days=3), customer=customers[1],
+            ship_to="Sunrise Dairy Co-op", delivery_note=dn1,
+            driver_name=dn1.driver_name, tax_percent=Decimal("5.00"), status="Issued",
+        )
+        InvoiceItem.objects.create(
+            invoice=inv, item_code="MILK-4%", description="Fresh milk (litres)",
+            quantity=Decimal("120.00"), unit_price=Decimal("1.20"),
+        )
+        InvoiceItem.objects.create(
+            invoice=inv, item_code="YGRT-500", description="Plain yogurt (500ml)",
+            quantity=Decimal("40.00"), unit_price=Decimal("1.50"),
+        )
+        self.stdout.write("  Delivery notes & invoices seeded")
 
         self.stdout.write(self.style.SUCCESS(
             "Seed complete. Log in and explore the dashboard."))

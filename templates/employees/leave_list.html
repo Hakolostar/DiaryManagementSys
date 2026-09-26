@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load core_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with title="Leave Applications" subtitle="Staff leave requests" button_url_name="employees:leave_add" button_label="Apply for Leave" %}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Employee</th>
+        <th class="px-4 py-3">Type</th>
+        <th class="px-4 py-3">From</th>
+        <th class="px-4 py-3">To</th>
+        <th class="px-4 py-3 text-right">Days</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for l in leaves %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2.5 font-medium text-gray-900">{{ l.employee.name }}</td>
+        <td class="px-4 py-2.5 text-gray-700">{{ l.leave_type }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ l.start_date }}</td>
+        <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ l.end_date|default:"—" }}</td>
+        <td class="px-4 py-2.5 text-right text-gray-700">{{ l.days }}</td>
+        <td class="px-4 py-2.5"><span class="badge">{{ l.status|badge }}</span></td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'employees:leave_edit' l.pk %}" class="mr-2 text-gray-500 hover:text-gray-800">Edit</a>
+          <a href="{% url 'employees:leave_delete' l.pk %}" class="text-rose-500 hover:text-rose-700">Del</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-400">No leave applications yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "components/pagination.html" %}
+{% endblock %}

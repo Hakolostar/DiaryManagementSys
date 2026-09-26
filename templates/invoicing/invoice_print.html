@@ -1,0 +1,110 @@
+{% load static %}{% load core_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Invoice — {{ invoice.invoice_number }}</title>
+<link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+<style>
+  @media print { .no-print { display: none; } }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }
+</style>
+</head>
+<body class="text-gray-900 text-[13px] leading-relaxed max-w-4xl mx-auto mt-6 p-8">
+  <div class="no-print mb-4 flex justify-between">
+    <button onclick="window.print()" class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white">Print / Save as PDF</button>
+    <span class="text-sm text-gray-500">Use your browser's Print → Save as PDF for a digital copy.</span>
+  </div>
+
+  <div class="border-2 border-gray-800 rounded-lg p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b-2 border-gray-800 pb-4">
+      <div>
+        <h1 class="text-2xl font-bold text-emerald-800">{{ farm.farm_name|default:"DAIRY MANAGEMENT SYSTEM" }}</h1>
+        <p class="text-xs text-gray-600">{{ farm.address|default:"Dairy Farm" }}{% if farm.phone %} · {{ farm.phone }}{% endif %}</p>
+      </div>
+      <div>
+        <span class="rounded-lg bg-emerald-700 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white">Invoice</span>
+        <p class="mt-1 text-sm font-mono font-semibold">{{ invoice.invoice_number }}</p>
+        <p class="text-[11px] text-gray-500">Invoice date: {{ invoice.invoice_date }}</p>
+      </div>
+    </div>
+
+    <!-- Parties -->
+    <div class="mt-5 grid grid-cols-2 gap-6 text-[13px]">
+      <div>
+        <p class="text-xs font-bold uppercase text-gray-500">Bill to</p>
+        <p class="mt-1 font-semibold">{{ invoice.customer.name }}</p>
+        <p>{{ invoice.customer.address|default:"" }}</p>
+        <p class="mt-1">Customer ID: {{ invoice.customer.pk }}</p>
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase text-gray-500">Ship to</p>
+        <p class="mt-1 font-semibold">{{ invoice.ship_to|default:"—" }}</p>
+        <p class="mt-3 text-xs font-bold uppercase text-gray-500">Delivery order</p>
+        <p class="font-mono text-sm">{{ invoice.delivery_note.delivery_order_number|default:"—" }}</p>
+        <p class="mt-1 text-xs font-bold uppercase text-gray-500">Driver</p>
+        <p class="text-sm">{{ invoice.driver_name|default:"—" }}</p>
+      </div>
+    </div>
+
+    <!-- Line items -->
+    <table class="mt-5 w-full border-collapse text-[13px]">
+      <thead>
+        <tr class="bg-gray-100 text-left text-xs font-bold uppercase">
+          <th class="border border-gray-800 px-3 py-2">#</th>
+          <th class="border border-gray-800 px-3 py-2">Item code</th>
+          <th class="border border-gray-800 px-3 py-2">Description</th>
+          <th class="border border-gray-800 px-3 py-2 text-center">Qty</th>
+          <th class="border border-gray-800 px-3 py-2 text-right">Unit price</th>
+          <th class="border border-gray-800 px-3 py-2 text-right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in invoice.items.all %}
+        <tr>
+          <td class="border border-gray-800 px-3 py-2 text-center">{{ forloop.counter }}</td>
+          <td class="border border-gray-800 px-3 py-2 font-mono text-xs">{{ item.item_code|default:"" }}</td>
+          <td class="border border-gray-800 px-3 py-2">{{ item.description }}</td>
+          <td class="border border-gray-800 px-3 py-2 text-center">{{ item.quantity|currency }}</td>
+          <td class="border border-gray-800 px-3 py-2 text-right">{{ item.unit_price|currency }}</td>
+          <td class="border border-gray-800 px-3 py-2 text-right font-semibold">{{ item.amount|currency }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="border border-gray-800 px-3 py-4 text-center text-gray-500">No line items</td></tr>
+        {% endfor %}
+        <tr class="bg-gray-50 font-bold">
+          <td colspan="4" class="border border-gray-800 px-3 py-2"></td>
+          <td class="border border-gray-800 px-3 py-2 text-right">Subtotal</td>
+          <td class="border border-gray-800 px-3 py-2 text-right">{{ invoice.subtotal|currency }}</td>
+        </tr>
+        <tr>
+          <td colspan="4" class="border border-gray-800 px-3 py-2"></td>
+          <td class="border border-gray-800 px-3 py-2 text-right">Tax ({{ invoice.tax_percent }}%)</td>
+          <td class="border border-gray-800 px-3 py-2 text-right">{{ invoice.tax|currency }}</td>
+        </tr>
+        <tr class="bg-emerald-50">
+          <td colspan="4" class="border border-gray-800 px-3 py-2"></td>
+          <td class="border border-gray-800 px-3 py-2 text-right font-bold uppercase">Total</td>
+          <td class="border border-gray-800 px-3 py-2 text-right text-base font-bold">{{ invoice.total|currency }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {% if invoice.notes %}<p class="mt-4 text-sm">Notes: {{ invoice.notes }}</p>{% endif %}
+
+    <div class="mt-10 grid grid-cols-2 gap-8">
+      <div class="border-2 border-gray-400 px-5 py-8">
+        <p class="text-[11px] text-gray-500">Received by (name &amp; signature)</p>
+      </div>
+      <div class="border-2 border-gray-400 px-5 py-8">
+        <p class="text-[11px] text-gray-500">Authorised signature</p>
+      </div>
+    </div>
+
+    <div class="mt-6 text-[10px] text-gray-500">
+      Generated by {{ app_name }} on {% now "j M Y, H:i" %} · Payment is due within 30 days of invoice date.
+    </div>
+  </div>
+</body>
+</html>

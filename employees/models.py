@@ -75,3 +75,98 @@ class Advance(models.Model):
 
     class Meta:
         ordering = ("-advance_date",)
+
+
+class Attendance(models.Model):
+    STATUS_CHOICES = [
+        ("Present", "Present"),
+        ("Absent", "Absent"),
+        ("Half Day", "Half Day"),
+        ("Leave", "Leave"),
+    ]
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name="attendance"
+    )
+    date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Present")
+    notes = models.CharField(max_length=200, blank=True, default="")
+
+    def __str__(self):
+        return f"{self.employee.name} — {self.status} ({self.date})"
+
+    class Meta:
+        ordering = ("-date",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["employee", "date"], name="unique_attendance_per_day"
+            )
+        ]
+
+
+class LeaveApplication(models.Model):
+    LEAVE_TYPE_CHOICES = [
+        ("Annual", "Annual"),
+        ("Sick", "Sick"),
+        ("Maternity", "Maternity"),
+        ("Casual", "Casual"),
+        ("Unpaid", "Unpaid"),
+    ]
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name="leave_applications"
+    )
+    leave_type = models.CharField(max_length=20, choices=LEAVE_TYPE_CHOICES, default="Casual")
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    reason = models.TextField(blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
+    approved_by = models.CharField(max_length=100, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def days(self):
+        if not self.end_date:
+            return 1
+        return max((self.end_date - self.start_date).days + 1, 1)
+
+    def __str__(self):
+        return f"{self.employee.name} — {self.leave_type} leave"
+
+    class Meta:
+        ordering = ("-start_date",)
+
+
+class ExpenseClaim(models.Model):
+    CATEGORY_CHOICES = [
+        ("Transport", "Transport"),
+        ("Meals", "Meals"),
+        ("Travel", "Travel"),
+        ("Medical", "Medical"),
+        ("Other", "Other"),
+    ]
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+        ("Paid", "Paid"),
+    ]
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name="expense_claims"
+    )
+    claim_date = models.DateField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="Other")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    description = models.CharField(max_length=200, blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
+    notes = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.employee.name} — {self.category} {self.amount}"
+
+    class Meta:
+        ordering = ("-claim_date",)

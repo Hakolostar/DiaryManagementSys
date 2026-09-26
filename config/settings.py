@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "purchases",
     "finance",
     "employees",
+    "deliveries",
+    "invoicing",
     "reports",
     # Third-party
     "django_filters",
